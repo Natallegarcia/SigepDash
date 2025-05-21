@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import os
 from datetime import datetime
+import pytz
 
 # Configuração inicial da página
 st.set_page_config(layout="wide")
@@ -14,8 +15,10 @@ log_path = "ultima_atualizacao.txt"
 
 # Função para salvar a data de modificação no arquivo de log
 def salvar_log_modificacao():
+    fuso_brasil = pytz.timezone("America/Sao_Paulo")
+    agora = datetime.now(fuso_brasil)
     with open(log_path, "w") as f:
-        f.write(datetime.now().strftime('%d/%m/%Y %H:%M:%S'))
+        f.write(agora.strftime('%d/%m/%Y %H:%M:%S'))
 
 # Função para ler a última data de modificação
 def ler_log_modificacao():
