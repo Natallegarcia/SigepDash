@@ -1,13 +1,33 @@
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
+import os
+from datetime import datetime
 
 # Configuração inicial da página
 st.set_page_config(layout="wide")
 st.title("📊 Dashboard de Chamados da Sprint")
 
-# Caminho do arquivo CSV
+# Caminhos dos arquivos
 csv_path = "organizacao_chamados.csv"
+log_path = "ultima_atualizacao.txt"
+
+# Função para salvar a data de modificação no arquivo de log
+def salvar_log_modificacao():
+    with open(log_path, "w") as f:
+        f.write(datetime.now().strftime('%d/%m/%Y %H:%M:%S'))
+
+# Função para ler a última data de modificação
+def ler_log_modificacao():
+    if os.path.exists(log_path):
+        with open(log_path, "r") as f:
+            return f.read()
+    else:
+        return "Nunca atualizado"
+
+# Mostrar última modificação registrada
+ultima_atualizacao = ler_log_modificacao()
+st.markdown(f"🕒 **Última atualização registrada:** {ultima_atualizacao}")
 
 # Carregar dados
 df = pd.read_csv(csv_path, sep=",", encoding="utf-8", quotechar='"', on_bad_lines='skip')
@@ -59,6 +79,7 @@ if st.button("💾 Salvar Alterações"):
         df.loc[match, "RESPONSÁVEL"] = row["RESPONSÁVEL"]
 
     df.to_csv(csv_path, index=False, encoding="utf-8", sep=",")
+    salvar_log_modificacao()
     st.success("Alterações salvas com sucesso!")
 
 # -----------------------------------------
